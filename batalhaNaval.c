@@ -1,52 +1,97 @@
 #include <stdio.h>
 
-#define TAMANHO 10  // Tamanho do tabuleiro 10x10
-#define NAVIO 3      // Valor que representa os navios
-//por: Rodolfo Assunção
+#define LARGURA 10 // Tabuleiro 10x1
+#define TAM_HAB 5  // Tamanho das matrizes de habilidade (5x5)
 
 // Função para inicializar o tabuleiro com água (0)
-void inicializarTabuleiro(int tabuleiro[TAMANHO][TAMANHO]) {
-    for (int i = 0; i < TAMANHO; i++) { // Percorre as linhas do tabuleiro
-        for (int j = 0; j < TAMANHO; j++) { // Percorre as colunas do tabuleiro
-            tabuleiro[i][j] = 0; // Inicializa todas as posições com 0 (água)
-        }
+void inicializarTabuleiro(int tabuleiro[LARGURA]) {
+    for (int i = 0; i < LARGURA; i++) {
+        tabuleiro[i] = 0;
     }
 }
 
-// Função para posicionar os navios no tabuleiro
-void posicionarNavios(int tabuleiro[TAMANHO][TAMANHO]) {
-    // Coordenadas iniciais dos navios (definidas diretamente no código)
-    int linha1 = 2, coluna1 = 4; // Navio horizontal começando na posição (2,4)
-    int linha2 = 5, coluna2 = 7; // Navio vertical começando na posição (5,7)
-
-    // Posiciona o navio horizontal (tamanho 3)
-    for (int i = 0; i < 3; i++) { // Percorre as três posições do navio
-        tabuleiro[linha1][coluna1 + i] = NAVIO; // Atribui o valor 3 às posições consecutivas
+// Função para exibir o tabuleiro
+void exibirTabuleiro(int tabuleiro[LARGURA]) {
+    printf("Tabuleiro:\n");
+    for (int i = 0; i < LARGURA; i++) {
+        printf("%d ", tabuleiro[i]);
     }
+    printf("\n");
+}
 
-    // Posiciona o navio vertical (tamanho 3)
-    for (int i = 0; i < 3; i++) { // Percorre as três posições do navio
-        tabuleiro[linha2 + i][coluna2] = NAVIO; // Atribui o valor 3 às posições consecutivas
+// Função para exibir uma matriz de habilidade
+void exibirMatriz(int matriz[TAM_HAB][TAM_HAB]) {
+    for (int i = 0; i < TAM_HAB; i++) {
+        for (int j = 0; j < TAM_HAB; j++) {
+            printf("%d ", matriz[i][j]);
+        }
+        printf("\n");
     }
 }
 
-// Função para exibir o tabuleiro no console
-void exibirTabuleiro(int tabuleiro[TAMANHO][TAMANHO]) {
-    printf("Tabuleiro:\n"); // Título da exibição
-    for (int i = 0; i < TAMANHO; i++) { // Percorre as linhas do tabuleiro
-        for (int j = 0; j < TAMANHO; j++) { // Percorre as colunas do tabuleiro
-            printf("%d ", tabuleiro[i][j]); // Imprime o valor da posição atual
-        }
-        printf("\n"); // Nova linha após imprimir uma linha inteira do tabuleiro
-    }
+// Matriz Cone (área expandindo para baixo)
+void definirHabilidadeCone(int matriz[TAM_HAB][TAM_HAB]) {
+    int padrao[TAM_HAB][TAM_HAB] = {
+        {0, 0, 1, 0, 0},
+        {0, 1, 1, 1, 0},
+        {1, 1, 1, 1, 1},
+        {0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0}
+    };
+    for (int i = 0; i < TAM_HAB; i++)
+        for (int j = 0; j < TAM_HAB; j++)
+            matriz[i][j] = padrao[i][j];
+}
+
+// Matriz Cruz (área em cruz com centro afetado)
+void definirHabilidadeCruz(int matriz[TAM_HAB][TAM_HAB]) {
+    int padrao[TAM_HAB][TAM_HAB] = {
+        {0, 0, 1, 0, 0},
+        {0, 0, 1, 0, 0},
+        {1, 1, 1, 1, 1},
+        {0, 0, 1, 0, 0},
+        {0, 0, 1, 0, 0}
+    };
+    for (int i = 0; i < TAM_HAB; i++)
+        for (int j = 0; j < TAM_HAB; j++)
+            matriz[i][j] = padrao[i][j];
+}
+
+// Matriz Octaedro (losango com ponto central afetado)
+void definirHabilidadeOctaedro(int matriz[TAM_HAB][TAM_HAB]) {
+    int padrao[TAM_HAB][TAM_HAB] = {
+        {0, 0, 1, 0, 0},
+        {0, 1, 1, 1, 0},
+        {1, 1, 1, 1, 1},
+        {0, 1, 1, 1, 0},
+        {0, 0, 1, 0, 0}
+    };
+    for (int i = 0; i < TAM_HAB; i++)
+        for (int j = 0; j < TAM_HAB; j++)
+            matriz[i][j] = padrao[i][j];
 }
 
 int main() {
-    int tabuleiro[TAMANHO][TAMANHO]; // Declaração da matriz que representa o tabuleiro
+    int tabuleiro[LARGURA];
+    int cone[TAM_HAB][TAM_HAB];
+    int cruz[TAM_HAB][TAM_HAB];
+    int octaedro[TAM_HAB][TAM_HAB];
 
-    inicializarTabuleiro(tabuleiro); // Chama a função para inicializar o tabuleiro com água (0)
-    posicionarNavios(tabuleiro);     // Chama a função para posicionar os navios (3)
-    exibirTabuleiro(tabuleiro);      // Chama a função para exibir o tabuleiro no console
+    inicializarTabuleiro(tabuleiro);
+    definirHabilidadeCone(cone);
+    definirHabilidadeCruz(cruz);
+    definirHabilidadeOctaedro(octaedro);
 
-    return 0; // Retorna 0 para indicar execução bem-sucedida
+    exibirTabuleiro(tabuleiro);
+    
+    printf("\nHabilidade Cone:\n");
+    exibirMatriz(cone);
+    
+    printf("\nHabilidade Cruz:\n");
+    exibirMatriz(cruz);
+    
+    printf("\nHabilidade Octaedro:\n");
+    exibirMatriz(octaedro);
+    
+    return 0;
 }
